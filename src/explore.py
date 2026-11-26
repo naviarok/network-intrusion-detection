@@ -5,9 +5,6 @@ import pandas as pd
 
 from src.theme import MID, OUTLINE, SERIES
 
-SKEWED = ["dur", "sbytes", "dbytes", "rate", "sload", "dload"]
-
-
 def class_balance(train_file, train_dedup, test):
     """Number of flows per attack category in the train file (before and after de-duplication) and test file."""
     return pd.DataFrame({"train file": train_file["attack_cat"].value_counts(),
@@ -37,7 +34,7 @@ def unseen_categories(train_file, test, categorical):
                         index=categorical)
 
 
-def skew_summary(df, columns=SKEWED):
+def skew_summary(df, columns):
     """Quantiles of the most skewed numeric columns: the median is tiny compared with the maximum."""
     return df[columns].describe(percentiles=[0.5, 0.99]).T[["min", "50%", "99%", "max"]]
 

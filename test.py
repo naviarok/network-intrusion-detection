@@ -18,13 +18,13 @@ from src.evaluate import (binary_scores, detection_by_category, false_alarm_rate
 from src.model import predict_flows
 from src.utils import load_config, load_model, save_figure, save_table, section
 
-RARE_CLASSES = ["Analysis", "Backdoor", "Shellcode", "Worms"]  # fewer than 2,000 flows each in the train file
-
-
 def evaluate_on_test(bundle, cfg):
-    """Print and save every test-set result used in the report."""
-    figures, results = cfg["output"]["figures_dir"], cfg["output"]["results_dir"]
-    train_file, test = load_raw(cfg)  # the train file is only used to compare TTL distributions
+    """Print and save every test-set result used in the report.
+
+    The train file is only read to compare its TTL distribution and class order with the test file.
+    """
+    figures, results, analysis = cfg["output"]["figures_dir"], cfg["output"]["results_dir"], cfg["analysis"]
+    train_file, test = load_raw(cfg)
     t = bundle["threshold"]
     p_attack = bundle["binary"].predict_proba(test[bundle["features"]])[:, 1]
     alarm = p_attack >= t
@@ -44,12 +44,12 @@ def evaluate_on_test(bundle, cfg):
     section("False alarms")
     normal = (test["label"] == 0).to_numpy()
     print(f"{alarm[normal].sum()} false alarms out of {normal.sum()} normal flows")
-    by_sttl = false_alarm_rate_by(test, alarm, "sttl", min_flows=30)
-    by_service = false_alarm_rate_by(test, alarm, "service", min_flows=100).sort_values("normal flows",
-                                                                                        ascending=False)
+    by_sttl = false_alarm_rate_by(test, alarm, "sttl", analysis["min_normal_flows"]["sttl"])
+    by_service = false_alarm_rate_by(test, alarm, "service", analysis["min_normal_flows"]["service"])
+    by_service = by_service.sort_values("normal flows", ascending=False)
     print(by_sttl.round(3).to_string())
     print(by_service.round(3).to_string())
-    print(ttl_shift(train_file, test).round(1).to_string())
+    print(ttl_shift(train_file, test, analysis["ttl_values"]).round(1).to_string())
     save_figure(plot_false_alarms(by_sttl, by_service), figures, "test_false_alarms.png")
 
     section("Stage 2 alone: attack category of the test attacks")
@@ -57,7 +57,7 @@ def evaluate_on_test(bundle, cfg):
     pred = bundle["multiclass"].predict(attacks[bundle["features"]])
     report = multiclass_report(attacks["attack_cat"], pred)
     print(report.round(3).to_string())
-    print("rare classes:\n" + report.loc[RARE_CLASSES].round(3).to_string())
+    print("rare classes:\n" + report.loc[analysis["rare_classes"]].round(3).to_string())
     save_table(report, results, "test_multiclass.csv")
     labels = [c for c in train_file["attack_cat"].value_counts().index if c != "Normal"]
     save_figure(plot_multiclass_confusion(attacks["attack_cat"], pred, labels), figures,
@@ -68,13 +68,14 @@ def evaluate_on_test(bundle, cfg):
     print(system.round(3).to_string())
     save_table(system, results, "test_system.csv")
 
-    section("Example: predictions for five test flows")
-    sample = test.sample(5, random_state=cfg["seed"])
+    section("Example: predictions for a few test flows")
+    sample = test.sample(analysis["demo_flows"], random_state=cfg["seed"])
     print(pd.concat([sample[["proto", "service", "sbytes", "sttl"]], predict_flows(bundle, sample),
                      sample[["attack_cat"]].rename(columns={"attack_cat": "true category"})], axis=1).to_string())
 
 
 def main():
+    """Parse the command line, load the saved models, then evaluate them or predict --input."""
     parser = argparse.ArgumentParser(description="Test the saved models or predict new flows")
     parser.add_argument("--config", default="configs/config.yaml")
     parser.add_argument("--input", help="CSV of new flows to classify (same columns as the dataset)")

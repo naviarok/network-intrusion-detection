@@ -3,7 +3,7 @@
 Importing this module switches matplotlib to file output and applies the theme.
 The three series greens were checked for colour-blind separation (OKLab distance > 15
 between neighbours); the light one has low contrast on white, so bars always get a
-dark outline.
+dark outline. Text and axes stay neutral grey; confusion matrices use a one-hue green ramp.
 """
 import matplotlib
 
@@ -12,12 +12,11 @@ import matplotlib.pyplot as plt
 from cycler import cycler
 from matplotlib.colors import LinearSegmentedColormap
 
-DARK, MID, LIGHT = "#0A6332", "#2E9A5E", "#78C896"  # series colours, in this fixed order
+DARK, MID, LIGHT = "#0A6332", "#2E9A5E", "#78C896"
 SERIES = [DARK, MID, LIGHT]
-OUTLINE = "#06331C"                                 # bar edges
-NEUTRAL = "#8A948F"                                 # reference lines (chance diagonal)
-INK, MUTED_INK = "#1F2A24", "#4A5550"               # text stays neutral, never series-coloured
-# one-hue ramp for magnitudes (confusion matrices): near-white to very dark green
+OUTLINE = "#06331C"
+NEUTRAL = "#8A948F"
+INK, MUTED_INK = "#1F2A24", "#4A5550"
 GREEN_RAMP = LinearSegmentedColormap.from_list("project_greens",
                                                ["#F3F9F5", "#78C896", "#2E9A5E", "#0A6332", "#042414"])
 if "project_greens" not in matplotlib.colormaps:

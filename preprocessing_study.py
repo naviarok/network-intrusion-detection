@@ -25,8 +25,11 @@ from src.utils import load_config, save_figure, save_table, section
 
 
 def fit_and_score(name, data, cfg, target="label", scaling=None, on_test=False):
-    """Fit one study model and return its validation (and optionally test) scores."""
-    if target == "attack_cat":  # the category model only sees attack flows, as in main.py
+    """Fit one study model and return its validation (and optionally test) scores.
+
+    As in main.py, the category model (target "attack_cat") only sees attack flows.
+    """
+    if target == "attack_cat":
         data = replace(data, train=data.train[data.train["label"] == 1], val=data.val[data.val["label"] == 1])
     model = build_model(name, cfg["study"]["models"][name], data, cfg, scaling)
     with warnings.catch_warnings(record=True) as caught:
@@ -46,6 +49,7 @@ def fit_and_score(name, data, cfg, target="label", scaling=None, on_test=False):
 
 
 def main():
+    """Run experiments A, B and C and save their tables and figure."""
     parser = argparse.ArgumentParser(description="Compare preprocessing choices")
     parser.add_argument("--config", default="configs/config.yaml")
     cfg = load_config(parser.parse_args().config)

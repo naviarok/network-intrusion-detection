@@ -17,6 +17,7 @@ from src.utils import load_config, save_model, save_table, section
 
 
 def main():
+    """Run the complete training pipeline and save the models."""
     parser = argparse.ArgumentParser(description="Train the UNSW-NB15 intrusion detection models")
     parser.add_argument("--config", default="configs/config.yaml")
     cfg = load_config(parser.parse_args().config)

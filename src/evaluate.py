@@ -9,16 +9,20 @@ from src.theme import DARK, GREEN_RAMP, LIGHT, MID, NEUTRAL, OUTLINE
 
 
 def binary_scores(y_true, p_attack, t):
-    """Detection metrics when every flow with P(attack) >= t raises an alarm."""
+    """Detection metrics when every flow with P(attack) >= t raises an alarm.
+
+    detection rate = attacks caught / all attacks (recall); precision = real attacks / all alarms;
+    false alarm rate = normal flows flagged / all normal flows; ROC AUC does not depend on t.
+    """
     pred = (np.asarray(p_attack) >= t).astype(int)
     tn, fp, fn, tp = confusion_matrix(y_true, pred).ravel()
     return {
         "accuracy": accuracy_score(y_true, pred),
-        "detection rate": recall_score(y_true, pred),  # attacks caught / all attacks
-        "precision": precision_score(y_true, pred),    # real attacks / all alarms
-        "false alarm rate": fp / (fp + tn),            # normal flows flagged / all normal flows
+        "detection rate": recall_score(y_true, pred),
+        "precision": precision_score(y_true, pred),
+        "false alarm rate": fp / (fp + tn),
         "F1": f1_score(y_true, pred),
-        "ROC AUC": roc_auc_score(y_true, p_attack),    # independent of t
+        "ROC AUC": roc_auc_score(y_true, p_attack),
     }
 
 
@@ -38,7 +42,7 @@ def false_alarm_rate_by(df, alarm, column, min_flows=1):
     return table[table["normal flows"] >= min_flows]
 
 
-def ttl_shift(train, test, values=(0, 31, 62, 254)):
+def ttl_shift(train, test, values):
     """Share (%) of normal flows with each sttl value in the train and test files."""
     share = lambda df: 100 * df.loc[df["label"] == 0, "sttl"].value_counts(normalize=True)
     return pd.DataFrame({"% of normal train flows": share(train),
@@ -82,9 +86,9 @@ def plot_false_alarms(by_sttl, by_service):
 
 
 def plot_grouped_bars(table, ylabel, title):
-    """Grouped bar chart of a table: one group per row, one green shade per column."""
+    """Grouped bar chart of a table: one group per row, one green shade per column (light to dark)."""
     ax = table.plot(kind="bar", rot=0, figsize=(8, 3.8), edgecolor=OUTLINE,
-                    color=[LIGHT, MID, DARK][:table.shape[1]])  # light to dark follows the column order
+                    color=[LIGHT, MID, DARK][:table.shape[1]])
     ax.set(ylabel=ylabel, xlabel="", title=title)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=table.shape[1], fontsize=8, frameon=False)
     return ax.figure

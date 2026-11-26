@@ -1,4 +1,7 @@
-"""Human-readable descriptions of the 42 UNSW-NB15 features, grouped as they appear on the page."""
+"""Human-readable descriptions of the 42 UNSW-NB15 features, grouped as they appear on the page.
+
+NUMERIC_GROUPS lists (group title, shown open?, [(column, description)]) in page order.
+"""
 
 CATEGORICAL = {
     "proto": "Transport protocol",
@@ -6,7 +9,6 @@ CATEGORICAL = {
     "state": "Connection state",
 }
 
-# (group title, shown open?, [(column, description)]) - the order of the page
 NUMERIC_GROUPS = [
     ("Volume and TTL", True, [
         ("dur", "Duration (s)"),

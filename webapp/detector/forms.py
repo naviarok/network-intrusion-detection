@@ -9,6 +9,7 @@ class FlowForm(forms.Form):
     """All 42 features of one network flow. Fields are built from features.py."""
 
     def __init__(self, *args, **kwargs):
+        """Create the 3 choice fields and 39 number fields."""
         super().__init__(*args, **kwargs)
         choices = category_choices()
         for name, label in CATEGORICAL.items():

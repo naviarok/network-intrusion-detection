@@ -5,6 +5,8 @@ from . import predictor
 
 
 class IndexPageTests(SimpleTestCase):
+    """The page renders, loads examples, agrees with the model and rejects invalid input."""
+
     def test_form_has_selects_for_text_features(self):
         page = self.client.get("/").content.decode()
         for name in ("proto", "service", "state"):

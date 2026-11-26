@@ -13,6 +13,7 @@ from src.utils import load_config, save_figure, save_table, section
 
 
 def main():
+    """Print the exploration tables and save the plots."""
     parser = argparse.ArgumentParser(description="Explore the UNSW-NB15 data")
     parser.add_argument("--config", default="configs/config.yaml")
     cfg = load_config(parser.parse_args().config)
@@ -38,7 +39,7 @@ def main():
     print(unseen_categories(train_file, test, categorical).to_string())
 
     section("Skewed numeric features")
-    print(skew_summary(train_file).to_string())
+    print(skew_summary(train_file, cfg["analysis"]["skewed_columns"]).to_string())
     save_figure(plot_log_transform(train_file), figures, "log_transform.png")
 
     section("Source TTL (sttl) versus label")

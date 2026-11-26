@@ -59,6 +59,16 @@ study:
   scalings: [none, standard, log_standard]
   ttl_features: [sttl, dttl, ct_state_ttl]
 
+# Settings of the analyses printed by explore.py and test.py.
+analysis:
+  skewed_columns: [dur, sbytes, dbytes, rate, sload, dload]   # shown by explore.py
+  rare_classes: [Analysis, Backdoor, Shellcode, Worms]        # fewer than 2,000 flows each in the train file
+  ttl_values: [0, 31, 62, 254]   # the common source TTL values compared between train and test
+  min_normal_flows:              # smallest group shown in the false alarm tables
+    sttl: 30
+    service: 100
+  demo_flows: 5                  # test flows shown in the prediction example
+
 output:
   model_path: models/best_model.pkl
   figures_dir: figures

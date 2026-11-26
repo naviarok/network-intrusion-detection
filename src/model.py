@@ -9,7 +9,6 @@ from sklearn.tree import DecisionTreeClassifier
 
 from src.preprocessing import build_preprocessor
 
-# Classifiers from the course that the search spaces in the config can refer to.
 CLASSIFIERS = {
     "logistic_regression": LogisticRegression,
     "knn": KNeighborsClassifier,
@@ -19,7 +18,7 @@ CLASSIFIERS = {
 
 
 def build_model(name, params, data, cfg, scaling=None):
-    """Return an unfitted Pipeline: preprocessing followed by the classifier `name`.
+    """Return an unfitted Pipeline: preprocessing followed by the classifier `name` (a key of CLASSIFIERS).
 
     Keeping both steps in one object means the preprocessing is always fitted on exactly
     the rows the classifier is trained on, and the saved model accepts raw flows.
@@ -33,9 +32,9 @@ def build_model(name, params, data, cfg, scaling=None):
     """
     classifier = CLASSIFIERS[name](**params)
     if "random_state" in classifier.get_params():
-        classifier.set_params(random_state=cfg["seed"])  # same results on every run
+        classifier.set_params(random_state=cfg["seed"])
     if name in ("random_forest", "knn"):
-        classifier.set_params(n_jobs=-1)  # trees / distance computations run on every CPU core
+        classifier.set_params(n_jobs=-1)
     prep = build_preprocessor(data.numeric, data.categorical,
                               scaling or cfg["preprocessing"]["scaling"], cfg["preprocessing"]["min_frequency"])
     return Pipeline([("prep", prep), ("clf", classifier)])

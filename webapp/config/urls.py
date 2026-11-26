@@ -1,3 +1,4 @@
+"""URL routes: the site has a single page."""
 from django.urls import path
 
 from detector.views import index

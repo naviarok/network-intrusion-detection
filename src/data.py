@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 CATEGORICAL = ["proto", "service", "state"]
-NOT_FEATURES = ["id", "label", "attack_cat"]  # id is a row number; label and attack_cat are the targets
+NOT_FEATURES = ["id", "label", "attack_cat"]
 
 
 @dataclass
@@ -23,6 +23,7 @@ class Datasets:
 
     @property
     def features(self):
+        """All feature names: numeric first, then categorical."""
         return self.numeric + self.categorical
 
 
@@ -46,7 +47,7 @@ def load_raw(cfg):
 
 
 def feature_columns(df, drop=()):
-    """Return (numeric, categorical) feature names, leaving out id, the targets and `drop`."""
+    """Return (numeric, categorical) feature names, leaving out `drop`, the targets and `id` (a row number)."""
     numeric = [c for c in df.columns if c not in NOT_FEATURES + CATEGORICAL + list(drop)]
     categorical = [c for c in CATEGORICAL if c not in drop]
     return numeric, categorical

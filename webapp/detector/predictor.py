@@ -8,9 +8,9 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))  # makes the project's `src` package importable
 
-from src.data import load_raw  # noqa: E402
-from src.model import predict_flows  # noqa: E402
-from src.utils import load_config, load_model  # noqa: E402
+from src.data import load_raw
+from src.model import predict_flows
+from src.utils import load_config, load_model
 
 
 @lru_cache
