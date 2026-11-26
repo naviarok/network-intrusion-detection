@@ -1,0 +1,84 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow check · UNSW-NB15 intrusion detector</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%230a6332'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'detector/style.css' %}">
+</head>
+<body>
+<main class="card">
+  <header>
+    <h1>Check a network flow</h1>
+    <p class="lead">Describe one connection and our model tells you whether it looks like an attack,
+      and which kind.</p>
+  </header>
+
+  <form method="get" class="example-bar">
+    <label for="example">Start from a real test flow</label>
+    <div class="row">
+      <select id="example" name="example">
+        {% for name in examples %}
+          <option value="{{ name }}" {% if name == example %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="button button-outline">Load</button>
+    </div>
+    {% if just_loaded %}<p class="hint">Loaded a real test flow labelled <strong>{{ example }}</strong>, one the
+      model classifies correctly. Change any value, then check it.</p>{% endif %}
+  </form>
+
+  {% if result %}
+    <section class="result {% if result.alarm %}result-alarm{% else %}result-normal{% endif %}" aria-live="polite">
+      <p class="result-kicker">{% if result.alarm %}Alarm raised{% else %}No alarm{% endif %}</p>
+      <h2>{% if result.alarm %}{{ result.category }} attack{% else %}Normal traffic{% endif %}</h2>
+      <div class="meter" role="img" aria-label="Attack probability {{ result.percent }} percent">
+        <div class="meter-fill" style="width: {{ result.percent }}%"></div>
+        <div class="meter-mark" style="left: {{ result.threshold }}%"></div>
+      </div>
+      <p class="meter-caption">Attack probability <strong>{{ result.percent }}%</strong>
+        · alarm threshold {{ result.threshold }}%</p>
+    </section>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="example" value="{{ example }}">
+    {% if form.errors %}<p class="form-error">Some values are missing or invalid: see the fields marked below.</p>{% endif %}
+
+    <div class="grid grid-3">
+      {% for field in form.categorical_fields %}
+        <div class="field">
+          <label for="{{ field.id_for_label }}">{{ field.label }} <code>{{ field.name }}</code></label>
+          {{ field }}
+          {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% for title, is_open, fields in form.numeric_groups %}
+      <details class="group" {% if is_open or form.errors %}open{% endif %}>
+        <summary>{{ title }} <span>{{ fields|length }} values</span></summary>
+        <div class="grid grid-2">
+          {% for field in fields %}
+            <div class="field">
+              <label for="{{ field.id_for_label }}">{{ field.label }} <code>{{ field.name }}</code></label>
+              {{ field }}
+              {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </details>
+    {% endfor %}
+
+    <button type="submit" class="button button-primary">Check this flow</button>
+  </form>
+
+  <footer>Random forest trained on UNSW-NB15 · ML integrated project, Subject 13, UIR</footer>
+</main>
+</body>
+</html>

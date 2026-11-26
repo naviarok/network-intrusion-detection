@@ -44,6 +44,21 @@ Run every command from this folder.
 | `python test.py` | **Independent test**: loads the saved model (no retraining) and evaluates it on the official test file, analyses false alarms and rare classes, and shows predictions for a few flows | ~15 s |
 | `python test.py --input flows.csv` | **Inference** on your own flows (same columns as the dataset); writes `predictions.csv` | seconds |
 
+### Web interface
+
+A one-page Django website lets anyone try the saved model without writing code: fill in the 42
+features of a flow (the three text features are drop-down menus) and the page shows the attack
+probability, whether an alarm is raised, and the predicted attack category. A menu loads real test
+flows of each category as starting points.
+
+```
+cd webapp
+python manage.py runserver      # then open http://127.0.0.1:8000
+python manage.py test           # 6 tests of the page
+```
+
+It needs `models/best_model.pkl` (included) and uses the same `src/` code as `test.py`.
+
 `main.py` and `test.py` are independent: `test.py` only needs `models/best_model.pkl`, which is included
 in the repository. Every script accepts `--config path/to/config.yaml`. All settings (paths, seed,
 validation size, preprocessing options, hyperparameter search spaces, alarm threshold rule) are in
@@ -86,6 +101,7 @@ Result tables are written as CSV files to `results/`.
 | `src/explore.py` | Exploration tables and plots |
 | `src/utils.py` | Configuration, saving/loading, small helpers |
 | `src/theme.py` | Dark green colour theme shared by every plot |
+| `webapp/` | Django web interface: `detector/predictor.py` (link to the model), `forms.py`, `views.py`, template, stylesheet, tests |
 | `models/best_model.pkl` | Saved models (binary + multiclass) and alarm threshold |
 | `results/` | Result tables (CSV) produced by the scripts |
 | `figures/` | Plots produced by the scripts |
