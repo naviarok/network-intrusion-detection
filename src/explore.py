@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from src.theme import MID, OUTLINE, SERIES
+
 SKEWED = ["dur", "sbytes", "dbytes", "rate", "sload", "dload"]
 
 
@@ -50,8 +52,8 @@ def ttl_attack_share(df, min_flows=500):
 
 def plot_class_balance(counts):
     """Horizontal bars (log scale) of the class counts."""
-    ax = counts.plot(kind="barh", logx=True, figsize=(8, 5), color=["black", "grey", "lightgrey"],
-                     edgecolor="black")
+    ax = counts.plot(kind="barh", logx=True, figsize=(8, 5), color=SERIES,
+                     edgecolor=OUTLINE)
     ax.invert_yaxis()
     ax.set(xlabel="number of flows (log scale)", ylabel="", title="Flows per attack category")
     return ax.figure
@@ -60,9 +62,9 @@ def plot_class_balance(counts):
 def plot_log_transform(df, column="sbytes"):
     """Histogram of a column before and after log(1 + x)."""
     fig, axes = plt.subplots(1, 2, figsize=(10, 3.5))
-    axes[0].hist(df[column], bins=50, color="grey")
+    axes[0].hist(df[column], bins=50, color=MID, edgecolor=OUTLINE, linewidth=0.3)
     axes[0].set(yscale="log", title=f"{column} (raw, log-scaled counts)")
-    axes[1].hist(np.log1p(df[column]), bins=50, color="grey")
+    axes[1].hist(np.log1p(df[column]), bins=50, color=MID, edgecolor=OUTLINE, linewidth=0.3)
     axes[1].set(title=f"log(1 + {column})")
     fig.tight_layout()
     return fig

@@ -85,6 +85,7 @@ Result tables are written as CSV files to `results/`.
 | `src/evaluate.py` | Metrics, false alarm and per-category analysis, plots |
 | `src/explore.py` | Exploration tables and plots |
 | `src/utils.py` | Configuration, saving/loading, small helpers |
+| `src/theme.py` | Dark green colour theme shared by every plot |
 | `models/best_model.pkl` | Saved models (binary + multiclass) and alarm threshold |
 | `results/` | Result tables (CSV) produced by the scripts |
 | `figures/` | Plots produced by the scripts |

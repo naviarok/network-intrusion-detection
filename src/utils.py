@@ -2,11 +2,10 @@
 import os
 
 import joblib
-import matplotlib
-
-matplotlib.use("Agg")  # the scripts only save figures, they never open a window
 import matplotlib.pyplot as plt
 import yaml
+
+import src.theme  # noqa: F401  (applies the project's plot theme)
 
 
 def load_config(path="configs/config.yaml"):

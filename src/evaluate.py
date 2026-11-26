@@ -5,6 +5,8 @@ import pandas as pd
 from sklearn.metrics import (ConfusionMatrixDisplay, RocCurveDisplay, accuracy_score, classification_report,
                              confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score)
 
+from src.theme import DARK, GREEN_RAMP, LIGHT, MID, NEUTRAL, OUTLINE
+
 
 def binary_scores(y_true, p_attack, t):
     """Detection metrics when every flow with P(attack) >= t raises an alarm."""
@@ -55,13 +57,13 @@ def plot_confusion_and_roc(y_true, p_attack, t):
     pred = (np.asarray(p_attack) >= t).astype(int)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
     ConfusionMatrixDisplay.from_predictions(y_true, pred, display_labels=["normal", "attack"],
-                                            values_format="d", cmap="Greys", ax=axes[0])
+                                            values_format="d", cmap=GREEN_RAMP, ax=axes[0])
     axes[0].set_title(f"Confusion matrix (threshold {t})")
     RocCurveDisplay.from_predictions(y_true, p_attack, name="test set", ax=axes[1],
-                                     curve_kwargs={"color": "black"})
+                                     curve_kwargs={"color": DARK, "linewidth": 2})
     scores = binary_scores(y_true, p_attack, t)
-    axes[1].plot(scores["false alarm rate"], scores["detection rate"], "ko", label=f"threshold {t}")
-    axes[1].plot([0, 1], [0, 1], "k:")
+    axes[1].plot(scores["false alarm rate"], scores["detection rate"], "o", color=DARK, markersize=8, markeredgecolor="white", label=f"threshold {t}")
+    axes[1].plot([0, 1], [0, 1], ":", color=NEUTRAL)
     axes[1].set(xlabel="false alarm rate", ylabel="detection rate", title="ROC curve")
     axes[1].legend(loc="lower right")
     fig.tight_layout()
@@ -71,18 +73,18 @@ def plot_confusion_and_roc(y_true, p_attack, t):
 def plot_false_alarms(by_sttl, by_service):
     """Bar charts of the false alarm rate per sttl value and per service."""
     fig, axes = plt.subplots(1, 2, figsize=(11, 3.5))
-    by_sttl["false alarm rate"].plot(kind="bar", rot=0, ax=axes[0], color="grey")
+    by_sttl["false alarm rate"].plot(kind="bar", rot=0, ax=axes[0], color=MID, edgecolor=OUTLINE)
     axes[0].set_title("False alarm rate by sttl")
-    by_service["false alarm rate"].plot(kind="bar", rot=0, ax=axes[1], color="grey")
+    by_service["false alarm rate"].plot(kind="bar", rot=0, ax=axes[1], color=MID, edgecolor=OUTLINE)
     axes[1].set_title("False alarm rate by service")
     fig.tight_layout()
     return fig
 
 
 def plot_grouped_bars(table, ylabel, title):
-    """Grouped bar chart of a table: one group per row, one grey shade per column."""
-    ax = table.plot(kind="bar", rot=0, figsize=(8, 3.8), edgecolor="black",
-                    color=["white", "darkgrey", "black"][:table.shape[1]])
+    """Grouped bar chart of a table: one group per row, one green shade per column."""
+    ax = table.plot(kind="bar", rot=0, figsize=(8, 3.8), edgecolor=OUTLINE,
+                    color=[LIGHT, MID, DARK][:table.shape[1]])  # light to dark follows the column order
     ax.set(ylabel=ylabel, xlabel="", title=title)
     ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.1), ncol=table.shape[1], fontsize=8, frameon=False)
     return ax.figure
@@ -92,7 +94,7 @@ def plot_multiclass_confusion(y_true, pred, labels):
     """Confusion matrix normalized per true class: the diagonal is the recall of each category."""
     fig, ax = plt.subplots(figsize=(8, 7))
     ConfusionMatrixDisplay.from_predictions(y_true, pred, labels=labels, normalize="true", values_format=".2f",
-                                            cmap="Greys", ax=ax, colorbar=False, xticks_rotation=45)
+                                            cmap=GREEN_RAMP, ax=ax, colorbar=False, xticks_rotation=45)
     ax.set_title("Attack categories: share of each true class (rows) per prediction")
     fig.tight_layout()
     return fig
