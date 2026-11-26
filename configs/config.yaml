@@ -1,0 +1,65 @@
+# All settings used by explore.py, preprocessing_study.py, main.py and test.py.
+
+seed: 42
+
+data:
+  raw_dir: data/raw
+  url: https://huggingface.co/datasets/Mireu-Lab/UNSW-NB15/resolve/main/Archives/UNSW-NB15.zip
+  # The file names are swapped in this copy: the "testing-set" file holds the 175,341 training rows.
+  train_file: UNSW_NB15_testing-set.csv
+  test_file: UNSW_NB15_training-set.csv
+  remove_duplicates: true    # drop rows that repeat another row of the train file
+  val_size: 0.2              # share of the train file kept aside for validation
+
+preprocessing:
+  scaling: log_standard      # none | standard | log_standard (log(1+x), then standardization)
+  min_frequency: 100         # rarer categories share one "infrequent" one-hot column
+  drop_features: []          # e.g. [sttl, dttl, ct_state_ttl] to remove the TTL features
+
+threshold:                   # alarm threshold of the binary model, chosen on validation
+  max_false_alarm_rate: 0.05 # lowest threshold that flags at most 5% of normal flows
+  step: 0.01
+
+# Hyperparameter search spaces. Every combination is trained on the train part and
+# scored on the validation part; the best one per task is saved.
+search:
+  binary:                    # selection score: detection rate at the chosen threshold
+    logistic_regression:
+      C: [0.01, 0.1, 1, 10]
+      max_iter: [2000]
+    decision_tree:
+      max_depth: [5, 10, 20, null]
+      min_samples_leaf: [1, 10]
+    random_forest:
+      n_estimators: [100]
+      max_depth: [10, 20]
+      min_samples_leaf: [1, 5]
+  multiclass:                # trained on attack flows only; selection score: macro F1 (every category counts equally)
+    logistic_regression:
+      C: [0.1, 1, 10]
+      class_weight: [null, balanced]
+      max_iter: [2000]
+    decision_tree:
+      max_depth: [10, 20, null]
+      min_samples_leaf: [1, 10]
+      class_weight: [null, balanced]
+    random_forest:
+      n_estimators: [100]
+      max_depth: [20]
+      min_samples_leaf: [1, 5]
+      class_weight: [null, balanced_subsample]
+
+# Fixed models used by preprocessing_study.py to compare preprocessing choices.
+study:
+  models:
+    logistic_regression: {C: 1, max_iter: 2000}
+    knn: {n_neighbors: 5}
+    decision_tree: {max_depth: 10}
+    random_forest: {n_estimators: 100, max_depth: 20, min_samples_leaf: 1}
+  scalings: [none, standard, log_standard]
+  ttl_features: [sttl, dttl, ct_state_ttl]
+
+output:
+  model_path: models/best_model.pkl
+  figures_dir: figures
+  results_dir: results

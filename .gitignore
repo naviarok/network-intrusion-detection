@@ -1,0 +1,19 @@
+__pycache__/
+*.py[oc]
+.venv/
+logs/
+predictions.csv
+
+# the dataset (47 MB) is downloaded automatically by src/data.py
+data/raw/
+
+# LaTeX build files
+report/*.aux
+report/*.log
+report/*.out
+report/*.fdb_latexmk
+report/*.fls
+report/*.nav
+report/*.snm
+report/*.toc
+report/*.synctex.gz

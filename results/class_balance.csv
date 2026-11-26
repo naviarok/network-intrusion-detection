@@ -1,0 +1,11 @@
+attack_cat,train file,"train, no duplicates",test file
+Normal,56000,51890,37000
+Generic,40000,4181,18871
+Exploits,33393,19844,11132
+Fuzzers,18184,16150,6062
+DoS,12264,3806,4089
+Reconnaissance,10491,7522,3496
+Analysis,2000,1594,677
+Backdoor,1746,1535,583
+Shellcode,1133,1091,378
+Worms,130,127,44
