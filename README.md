@@ -4,6 +4,10 @@ Integrated project, Machine Learning course (Prof. Youness Moukafih), UIR 2026/2
 
 Team: Walid El Haimer, Ayman Ezzougari, Ahmed Ilyas Elmoussi, Ahmed Graoui.
 
+Repository: https://github.com/naviarok/network-intrusion-detection
+
+![The web interface: describe a flow and the model says whether it is an attack, and which kind](docs/web_interface.png)
+
 The system reads the statistics of a network flow (duration, bytes, packets, TTL, protocol, …) and
 answers two questions:
 
@@ -49,7 +53,7 @@ Run every command from this folder.
 A one-page Django website lets anyone try the saved model without writing code: fill in the 42
 features of a flow (the three text features are drop-down menus) and the page shows the attack
 probability, whether an alarm is raised, and the predicted attack category. A menu loads real test
-flows of each category as starting points.
+flows of each category as starting points (screenshot at the top of this page).
 
 ```
 cd webapp
@@ -106,6 +110,7 @@ Result tables are written as CSV files to `results/`.
 | `results/` | Result tables (CSV) produced by the scripts |
 | `figures/` | Plots produced by the scripts |
 | `report/` | Written report and slides (LaTeX sources and PDFs) |
+| `docs/` | Screenshot of the web interface shown at the top of this README |
 
 ## Reference
 
